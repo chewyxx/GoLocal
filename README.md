@@ -1,2 +1,0 @@
-# GoLocal
-Created with CodeSandbox
