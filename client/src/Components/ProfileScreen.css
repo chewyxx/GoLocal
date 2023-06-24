@@ -1,0 +1,10 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+.profilebg {
+    background: #A7C7E7;
+    background-size: 100% 100%;
+    background-position: center;
+    height: 130vh;
+}
