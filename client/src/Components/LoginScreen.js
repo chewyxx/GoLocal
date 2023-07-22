@@ -1,6 +1,7 @@
 import { Container, Box } from "@mui/material";
 import { Auth } from "@supabase/auth-ui-react";
 import { supabase, customTheme } from "../Supabase";
+import React from 'react';
 import "./LoginScreen.css";
 
 export default function LoginScreen() {

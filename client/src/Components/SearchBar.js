@@ -4,18 +4,8 @@ import { Container, InputAdornment, TextField, Paper, Table, TableBody, TableCel
 import React, { useCallback, useState, useEffect } from 'react'; 
 import SearchIcon from "@mui/icons-material/Search";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import Favourites from "./Favourites";
+import Favourites from "./Favourites.js";
 import { supabase } from "../Supabase";
-
-const {data:{user}} = await supabase.auth.getUser();
-
-const columns = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'postalcode', label: 'Postal\u00a0Code', minWidth: 80 },
-  { id: 'category', label: 'Category', minWidth: 100},
-  { id: 'type', label: 'Type', minWidth: 100},
-  { id: 'website', label: 'Website', minWidth: 170, align: 'right'},
-];
 
 export default function SearchBar() {
   const [data, setData] = useState([]); 
@@ -25,6 +15,14 @@ export default function SearchBar() {
   const [searchedVal, setSearchedVal] = React.useState("");
   const [favourites, setFavourites] = React.useState([]);
   const [error, setError] = React.useState(null);
+
+  const columns = [
+    { id: 'name', label: 'Name', minWidth: 170 },
+    { id: 'postalcode', label: 'Postal\u00a0Code', minWidth: 80 },
+    { id: 'category', label: 'Category', minWidth: 100},
+    { id: 'type', label: 'Type', minWidth: 100},
+    { id: 'website', label: 'Website', minWidth: 170, align: 'right'},
+  ];
 
   const handleChange = (event) => {
     setSearchTerm(event.target.value);
@@ -47,7 +45,8 @@ export default function SearchBar() {
       });
   }, []);
 
-  const fetchFavourites = useCallback(() => {
+  const fetchFavourites = useCallback(async () => {
+    const {data:{user}} = await supabase.auth.getUser();
     supabase
       .from("Favourites")
       .select()
@@ -59,6 +58,7 @@ export default function SearchBar() {
       })
       .catch((error) => {
         setError(error);
+        console.log(error);
       });
       }, [setFavourites, setError]);
 
@@ -66,7 +66,9 @@ export default function SearchBar() {
         fetchFavourites();
       }, [fetchFavourites]);
 
-      const addToFavourite = (favs) => { 
+      const addToFavourite = async (favs, index) => { 
+        const {data:{user}} = await supabase.auth.getUser();
+        console.log(`Clicked favorite button with data-testid: favorite-button-${index}`);
         supabase 
           .from("Favourites") 
           .insert({id: favs.id, name: favs.name, postalcode: favs.postalcode, address: favs.address, website: favs.website, category: favs.category, type: favs.type, user_id: user.id})
@@ -96,7 +98,11 @@ export default function SearchBar() {
       }}
       >
         <TextField id="outlined-search" label="Search" type="search"
-        onChange={(e) => setSearchedVal(e.target.value)} 
+        onChange={(e) => {
+          setSearchedVal(e.target.value);
+          setPage(0);
+        }
+      } 
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -136,14 +142,15 @@ export default function SearchBar() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.filter((row) =>
+            {data
+            .filter((row) =>
                 !searchedVal.length || row[searchTerm]
                   .toString()
                   .toLowerCase()
                   .includes(searchedVal.toString().toLowerCase()) 
               )
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
+              .map((row, index) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                     {columns.map((column) => {
@@ -153,9 +160,11 @@ export default function SearchBar() {
                         </TableCell>
                       );
                     })}
-                    <IconButton aria-label="favourite" onClick={() => addToFavourite(row)}>
+                    <TableCell>
+                    <IconButton aria-label="favourite" onClick={() => addToFavourite(row, index)} data-testid={`favorite-button-${index}`}>
                       <FavoriteIcon/>
                     </IconButton>
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -165,7 +174,13 @@ export default function SearchBar() {
       <TablePagination
         rowsPerPageOptions={[5]}
         component="div"
-        count={data.length}
+        count={data
+          .filter((row) =>
+              !searchedVal.length || row[searchTerm]
+                .toString()
+                .toLowerCase()
+                .includes(searchedVal.toString().toLowerCase()) 
+            ).length}
         rowsPerPage={5}
         page={page}
         onPageChange={handleChangePage}

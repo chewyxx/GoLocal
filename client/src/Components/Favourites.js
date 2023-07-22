@@ -1,22 +1,20 @@
-import { Delete as DeleteIcon } from "@mui/icons-material";
 import { Container, Paper, Table, TableBody, TableCell,
   TableContainer, TableHead, TablePagination, TableRow, IconButton, Typography } from "@mui/material";
+import { Delete as DeleteIcon } from "@mui/icons-material";
 import React from 'react'; 
 import { supabase } from "../Supabase";
 
-const columns = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'postalcode', label: 'Postal\u00a0Code', minWidth: 80 },
-  { id: 'category', label: 'Category', minWidth: 100},
-  { id: 'type', label: 'Type', minWidth: 100},
-  { id: 'website', label: 'Website', minWidth: 170, align: 'right'},
-];
-
 export default function Favourites({favourites, changeFavourites}) {
-//Buttons: view details, delete,
-//display the name, postal, website
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const columns = [
+    { id: 'name', label: 'Name', minWidth: 170 },
+    { id: 'postalcode', label: 'Postal\u00a0Code', minWidth: 80 },
+    { id: 'category', label: 'Category', minWidth: 100},
+    { id: 'type', label: 'Type', minWidth: 100},
+    { id: 'website', label: 'Website', minWidth: 170, align: 'right'},
+  ];
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -27,7 +25,8 @@ export default function Favourites({favourites, changeFavourites}) {
     setPage(0);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id, index) => {
+    console.log(`Clicked delete button with testid: ${index}`);
     supabase
       .from("Favourites")
       .delete()
@@ -68,7 +67,7 @@ export default function Favourites({favourites, changeFavourites}) {
           <TableBody>
             {favourites
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
+              .map((row, index) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                     {columns.map((column) => {
@@ -78,18 +77,24 @@ export default function Favourites({favourites, changeFavourites}) {
                         </TableCell>
                       );
                     })}
-                    <IconButton aria-label="favourite" onClick={() => handleDelete(row.id)}>
-                      <DeleteIcon/>
-                    </IconButton>
+                    <TableCell>
+                      <IconButton aria-label="delete" onClick={() => handleDelete(row.id, index)} data-testid={`delete-button-${index}`}>
+                        <DeleteIcon/>
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 );
               })}
           </TableBody>
            ) : (
-            <Typography variant="h4" component="" align="" 
-            sx={{fontFamily: "Helvetica", fontSize: 20, mt: 2, ml: 2}}>
-              No favourites yet!
-            </Typography>
+            <TableBody>
+              <TableRow>
+              <Typography variant="td" component="td" align="center" 
+               sx={{fontFamily: "Helvetica", fontSize: 20, mt: 2, ml: 2}}>
+                  No favourites yet!
+                </Typography>
+              </TableRow>
+            </TableBody>
           )}
         </Table>
       </TableContainer>

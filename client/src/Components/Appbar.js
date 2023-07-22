@@ -5,7 +5,7 @@ const handleLogOutClick = () => {
     supabase.auth.signOut();
   };
 
-export default function WelcomeBanner() {
+export default function Appbar() {
   return (
     <header>
       <AppBar position="relative">
