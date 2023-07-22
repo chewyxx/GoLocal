@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import FavouritesMock from "./FavouritesMock.js";
 
 export default function SearchBarMock({ insert, fetchFavourites }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [searchTerm, setSearchTerm] = React.useState('name');
   const [searchedVal, setSearchedVal] = React.useState("");
+  const [favourites, setFavourites] = React.useState([]);
 
   const columns = [
     { id: 'name', label: 'Name', minWidth: 170 },
@@ -71,13 +73,13 @@ export default function SearchBarMock({ insert, fetchFavourites }) {
         "website":"https://www.facebook.com/wowwowwestgenuine/",
         "category":"Food & Drinks",
         "type":"Physical Store"},
-        {"id":9,
-        "name":"Shashlik Restaurant",
-        "postalcode":"S238882",
-        "address":"545 Orchard Road, Far East Shopping Centre, #06-19",
-        "website":"https://shashlik.sg/",
-        "category":"Food & Drinks",
-        "type":"Physical Store"},
+        {"id":31,
+        "name":"Makan Fix",
+        "postalcode": null,
+        "address": null,
+        "website":"https://www.instagram.com/makanfix/",
+        "category":"Dessert",
+        "type":"Online"},
         {"id":10,
         "name":"Butternut",
         "postalcode":"S618499",
@@ -112,8 +114,43 @@ export default function SearchBarMock({ insert, fetchFavourites }) {
         fetchFavourites();
       }
       
+    const handleChange = (event) => {
+      setSearchTerm(event.target.value);
+    };
+      
       return (
         <>
+          <div>
+            <FavouritesMock
+            favourites={favourites}
+            changeFavourites={fetchFavourites}
+            deleteFav={() => {
+              console.log("deleteFav is called");
+            }}/>
+          </div>
+          <div>
+            <input
+              type="text"
+              id="searchbar"
+              data-testid="search-bar"
+              onChange={(e) => {
+                setSearchedVal(e.target.value);
+                setPage(0);
+              }
+            }
+              />
+            <select
+            name="searchby"
+            data-testid="search-options"
+            id="search-select"
+            value={searchTerm}
+            onChange={handleChange}
+            >
+              <option value="name">Name</option>
+              <option value="category">Category</option>
+              <option value="type">Online/Physical Store</option>
+            </select>
+          </div>
           <table>
             <thead>
               <tr>
@@ -125,7 +162,12 @@ export default function SearchBarMock({ insert, fetchFavourites }) {
               </tr>
             </thead>
             <tbody>
-              {data
+              {data.filter((row) =>
+                !searchedVal.length || row[searchTerm]
+                  .toString()
+                  .toLowerCase()
+                  .includes(searchedVal.toString().toLowerCase()) 
+              )
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
                 <tr key={row.id}>
