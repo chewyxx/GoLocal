@@ -79,7 +79,7 @@ export default function Favourites({favourites, changeFavourites}) {
                       );
                     })}
                     <TableCell>
-                      <IconButton aria-label="delete" onClick={() => handleDelete(row.id, index)} data-testid={`delete-button-${index}`}>
+                      <IconButton aria-label="delete" color="error" onClick={() => handleDelete(row.id, index)} data-testid={`delete-button-${index}`}>
                         <DeleteIcon/>
                       </IconButton>
                     </TableCell>
