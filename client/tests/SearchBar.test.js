@@ -10,6 +10,91 @@ const fetchFavouritesMock = jest.fn(() => {
   console.log("fetchFavourites was called");
 });
 
+// tests for search field together with favourites button
+
+test('retesting favourites button with search 1', () => {
+  const { getByTestId } = render(<SearchBarMock insert={insertMock} fetchFavourites={fetchFavouritesMock}/>);
+  const dropdown = getByTestId('search-options');
+  fireEvent.change(dropdown, { target: { value: 'category' } });
+  const searchInput = getByTestId("search-bar");
+  fireEvent.change(searchInput, { target: { value: 'food' } });
+  const favouriteButton = getByTestId('favourite-button-0');
+  fireEvent.click(favouriteButton);
+  expect(insertMock).toHaveBeenCalledTimes(1);
+  expect(insertMock).toHaveBeenCalledWith({
+    id: 1,
+    name: "Homeground Coffee Roasters",
+    postalcode :"S088328",
+    address :"15 Teo Hong Road",
+    website :"https://homegroundcoffeeroasters.com/",
+    category :"Food & Drinks",
+    type: "Physical Store"}, 0);
+  expect(fetchFavouritesMock).toHaveBeenCalledTimes(1);
+});
+
+test('retesting favourites button with search 2', () => {
+  const { getByTestId } = render(<SearchBarMock insert={insertMock} fetchFavourites={fetchFavouritesMock}/>);
+  const dropdown = getByTestId('search-options');
+  fireEvent.change(dropdown, { target: { value: 'category' } });
+  const searchInput = getByTestId("search-bar");
+  fireEvent.change(searchInput, { target: { value: 'food' } });
+  const favouriteButton = getByTestId('favourite-button-2');
+  fireEvent.click(favouriteButton);
+  expect(insertMock).toHaveBeenCalledTimes(1);
+  expect(insertMock).toHaveBeenCalledWith({
+    id :3,
+    name: "Nothing But Cheese Burger",
+    postalcode: "S428802",
+    address: "112 East Coast Road, #01-17, Katong I12",
+    website: "https://nbcb.com.sg/",
+    category: "Food & Drinks",
+    type: "Physical Store"}, 2);
+  expect(fetchFavouritesMock).toHaveBeenCalledTimes(1);
+});
+
+test('retesting favourites button with search 3', () => {
+  const { getByTestId } = render(<SearchBarMock insert={insertMock} fetchFavourites={fetchFavouritesMock}/>);
+  const dropdown = getByTestId('search-options');
+  fireEvent.change(dropdown, { target: { value: 'category' } });
+  const searchInput = getByTestId("search-bar");
+  fireEvent.change(searchInput, { target: { value: 'food' } });
+  const favouriteButton = getByTestId('favourite-button-4');
+  fireEvent.click(favouriteButton);
+  expect(insertMock).toHaveBeenCalledTimes(1);
+  expect(insertMock).toHaveBeenCalledWith({
+    id: 5,
+    name: "The Masses",
+    postalcode: "S189694",
+    address: "85 Beach Road, #01-02",
+    website: "https://www.facebook.com/themassessg/",
+    category: "Food & Drinks",
+    type: "Physical Store"}, 4);
+  expect(fetchFavouritesMock).toHaveBeenCalledTimes(1);
+});
+
+test('retesting favourites button and pagination with search', () => {
+  const { getByTestId } = render(<SearchBarMock insert={insertMock} fetchFavourites={fetchFavouritesMock}/>);
+  const dropdown = getByTestId('search-options');
+  fireEvent.change(dropdown, { target: { value: 'category' } });
+  const searchInput = getByTestId("search-bar");
+  fireEvent.change(searchInput, { target: { value: 'food' } });
+  const nextPageButton = getByTestId('next-page-button');
+  fireEvent.click(nextPageButton);
+  const favouriteButton = getByTestId('favourite-button-0');
+  fireEvent.click(favouriteButton);
+  expect(insertMock).toHaveBeenCalledTimes(1);
+  expect(insertMock).toHaveBeenCalledWith({
+    id :6,
+    name :"Ah Hua Teochew Fishball Noodles",
+    postalcode :"S600415",
+    address :"415 Pandan Gardens, #01-117",
+    website :"https://www.facebook.com/ahhuateochewfishballnoodle/",
+    category :"Food & Drinks",
+    type :"Physical Store"}, 0);
+  expect(fetchFavouritesMock).toHaveBeenCalledTimes(1);
+});
+
+
 // tests for search field
 
 test('testing search by full name 1', () => {
@@ -113,6 +198,19 @@ test('searching for category that is not in our database', () => {
   expect(nameRows).toHaveLength(0);
 });
 
+test('searching by category with unrecognised symbols returns nothing', () => {
+  const { queryAllByTestId, getByTestId } = render(<SearchBarMock/>);
+  const dropdown = getByTestId('search-options');
+  fireEvent.change(dropdown, { target: { value: 'category' } });
+  const searchInput = getByTestId("search-bar");
+  fireEvent.change(searchInput, { target: { value: '!@#$' } });
+  const nameRows = queryAllByTestId('name-row-number',
+  {
+    exact: false,
+  });
+  expect(nameRows).toHaveLength(0);
+});
+
 test('searching by full name of business type', () => {
   const { getAllByTestId, getByTestId } = render(<SearchBarMock/>);
   const dropdown = getByTestId('search-options');
@@ -147,6 +245,19 @@ test('searching for business type that is not in our database', () => {
   fireEvent.change(dropdown, { target: { value: 'type' } });
   const searchInput = getByTestId("search-bar");
   fireEvent.change(searchInput, { target: { value: 'non existent type' } });
+  const nameRows = queryAllByTestId('name-row-number',
+  {
+    exact: false,
+  });
+  expect(nameRows).toHaveLength(0);
+});
+
+test('searching by business type with unrecognised symbols returns nothing', () => {
+  const { queryAllByTestId, getByTestId } = render(<SearchBarMock/>);
+  const dropdown = getByTestId('search-options');
+  fireEvent.change(dropdown, { target: { value: 'type' } });
+  const searchInput = getByTestId("search-bar");
+  fireEvent.change(searchInput, { target: { value: '!@#$' } });
   const nameRows = queryAllByTestId('name-row-number',
   {
     exact: false,
