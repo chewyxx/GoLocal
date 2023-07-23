@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
-export const supabase = createClient(
-  "https://napykagxvarwgjsfeytm.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hcHlrYWd4dmFyd2dqc2ZleXRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODUyMzc5ODIsImV4cCI6MjAwMDgxMzk4Mn0.xH8k7mEfddHdadJqodDutI-zzywl10RaT680LBloBBw"
-);
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export const customTheme = {
   default: {
