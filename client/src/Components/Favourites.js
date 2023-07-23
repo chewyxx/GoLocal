@@ -8,6 +8,7 @@ export default function Favourites({favourites, changeFavourites}) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  // table headers
   const columns = [
     { id: 'name', label: 'Name', minWidth: 170 },
     { id: 'postalcode', label: 'Postal\u00a0Code', minWidth: 80 },
@@ -40,7 +41,7 @@ export default function Favourites({favourites, changeFavourites}) {
       });
   };
   
-  const favouritesLength = favourites.length === 0; 
+  const favouritesEmpty = favourites.length === 0; 
 
   return (
     <Container maxWidth="lg" align="center" sx={{ mt: 3 }}>
@@ -63,7 +64,7 @@ export default function Favourites({favourites, changeFavourites}) {
               ))}
             </TableRow>
           </TableHead>
-          {!favouritesLength ? (
+          {!favouritesEmpty ? (
           <TableBody>
             {favourites
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -78,7 +79,7 @@ export default function Favourites({favourites, changeFavourites}) {
                       );
                     })}
                     <TableCell>
-                      <IconButton aria-label="delete" color = "error" onClick={() => handleDelete(row.id, index)} data-testid={`delete-button-${index}`}>
+                      <IconButton aria-label="delete" onClick={() => handleDelete(row.id, index)} data-testid={`delete-button-${index}`}>
                         <DeleteIcon/>
                       </IconButton>
                     </TableCell>
@@ -87,6 +88,7 @@ export default function Favourites({favourites, changeFavourites}) {
               })}
           </TableBody>
            ) : (
+            // displays this table body if favourites are empty
             <TableBody>
               <TableRow>
               <Typography variant="td" component="td" align="center" 

@@ -11,11 +11,12 @@ export default function SearchBar() {
   const [data, setData] = useState([]); 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [searchTerm, setSearchTerm] = React.useState('name');
+  const [searchTerm, setSearchTerm] = React.useState('name'); // default to search by name
   const [searchedVal, setSearchedVal] = React.useState("");
   const [favourites, setFavourites] = React.useState([]);
   const [error, setError] = React.useState(null);
 
+  // headers for table
   const columns = [
     { id: 'name', label: 'Name', minWidth: 170 },
     { id: 'postalcode', label: 'Postal\u00a0Code', minWidth: 80 },
@@ -24,6 +25,7 @@ export default function SearchBar() {
     { id: 'website', label: 'Website', minWidth: 170, align: 'right'},
   ];
 
+  // search field
   const handleChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -148,8 +150,8 @@ export default function SearchBar() {
                   .toString()
                   .toLowerCase()
                   .includes(searchedVal.toString().toLowerCase()) 
-              )
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              ) // filter results according to search
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) // slicing data for pagination
               .map((row, index) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
