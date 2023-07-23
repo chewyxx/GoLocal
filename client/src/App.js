@@ -13,6 +13,36 @@ export default function App() {
     return () => subscription.data.subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const passwordReset = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "PASSWORD_RECOVERY") {
+          const newPassword = prompt(
+            "What would you like your new password to be?"
+          );
+          const { data, error } = await supabase.auth.updateUser({
+            password: newPassword
+          });
+
+          if (data) alert("Password updated successfully!");
+          if (error) alert("There was an error updating your password.");
+        }
+      }
+    );
+    return () => passwordReset.data.subscription.unsubscribe();
+  }, []);
+
+  const { data, error } = async () =>
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        queryParams: {
+          access_type: "offline",
+          prompt: "consent"
+        }
+      }
+    });
+
   return (
     <div>
       {session ? <ProfileScreen /> : <LoginScreen />}
