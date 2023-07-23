@@ -37,7 +37,6 @@ export default function LoginScreen() {
         <Auth
           supabaseClient={supabase}
           theme="default"
-          providers={["google"]}
           appearance={{
             theme: customTheme,
             style: {
