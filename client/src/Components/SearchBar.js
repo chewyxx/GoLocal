@@ -161,7 +161,7 @@ export default function SearchBar() {
                       );
                     })}
                     <TableCell>
-                    <IconButton aria-label="favourite" onClick={() => addToFavourite(row, index)} data-testid={`favorite-button-${index}`}>
+                    <IconButton aria-label="favourite" color = "primary" onClick={() => addToFavourite(row, index)} data-testid={`favorite-button-${index}`}>
                       <FavoriteIcon/>
                     </IconButton>
                     </TableCell>
